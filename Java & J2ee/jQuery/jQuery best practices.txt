@@ -1,0 +1,148 @@
+Append content outside of loops
+
+//BAD
+$.each(myArray, function(index, item) {
+  var newTweet = '<li>' + item + '</li>';
+  $('#statuses').append(newTweet);
+});
+
+//GOOD
+var newTweet = '';
+
+$.each(myArray, function(index, item) {
+  newTweet += '<li>' + item + '</li>';
+});
+
+$('#statuses').html(newTweet);
+
+-------------------------------------------------------------------------------------------------------------------
+
+Cache the length property in loops
+
+var arrayLength = myArray.length;
+
+for (var i = 0; i < arrayLength; i++) {
+  //DO SOMETHING
+}
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+Avoid Anonymous Functions
+
+Anonymous functions are often used when binding event handlers.
+However, anonymous functions are difficult to debug, maintain, test, or reuse.
+
+//BAD
+$(document).ready(function() {
+  $('.status .delete').click(function(e) {
+    //Do something
+  });
+
+  $('.status').dblclick(function(e) {
+    //Do the same thing
+  });
+});
+
+//GOOD
+var bindingObject = {
+  onReady : function() {
+    $('.status .delete').click(bindingObject.deleteTweet);
+    $('.status').dblclick(bindingObject.deleteTweet);
+  },
+  deleteTweet : function(e) {
+    //Do something
+  }
+};
+
+$(document).ready(bindingObject.onReady);
+
+-------------------------------------------------------------------------------------------------------------------
+
+Optimizing Selectors
+
+Id selections are really fast. They are handled by document.getElementById()
+
+// This is fast
+$('#statuses .status');
+
+//This is faster
+$('#statuses').find('.status');
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+Sizzle, the jQuery selector engine works bottom-up (right to left). Be more specific on the right side of your selector rather than on the left
+
+//GOOD
+$('li.status .delete');
+
+//BETTER
+$('.status img.delete');
+
+-------------------------------------------------------------------------------------------------------------------
+
+Utility Methods
+
+$.trim(): This method removes leading and trailing whitespaces
+
+$.trim('    lots of extra whitespace    ');
+
+
+------------------------------------------------------------------
+
+$.each(): This method iterates over objects and arrays
+
+$.each(['apple','banana','peach'], function(index, value) {
+  console.log('index: ' + index + ' value: ' + value);
+});
+
+$.each({ firstname : 'laurent', lastname : 'tonon' }, function(key, value) {
+  console.log(key + ' : ' + value);
+});
+
+------------------------------------------------------------------
+
+$.inArray(): This method checks if a value is contained in an array. If found it returns the value’s index of the array.
+Returns -1 if the value is not found
+
+var myArray = [ 23, 46, 31, 12 ];
+if ($.inArray(31, myArray) !== -1) { 
+  console.log('found it!');
+}
+
+------------------------------------------------------------------
+
+
+$.extend()  -- Modifies the first object and returns the modified object
+
+var myFirstObject = { fruit : 'apple', vegetable: 'carrot' };
+var mySecondObject = { fruit : 'banana' };
+var resultingObject = $.extend(myFirstObject, mySecondObject); 
+console.log(myFirstObject.fruit); 
+console.log(resultingObject.fruit); 
+
+------------------------------------------------------------------
+
+jQuery also provides methods to determine the type of a variable ($.isFunction(), $.isPlainObject(), $.isArray())
+
+------------------------------------------------------------------
+
+Avoiding Conflict With Other JavaScript Libraries
+
+//Using the $ variable
+$('.status').show();
+
+//Using the jQuery variable
+jQuery('.status').show();
+
+To avoid conflicts, you can put jQuery in no-conflict mode as soon as it is loaded in the page using the .noConflict() method
+
+<script>var $j = jQuery.noConflict();</script>
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
